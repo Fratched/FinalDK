@@ -30,4 +30,11 @@ public class ShopItem : ArtifactVisualizer
     {
         costCounter.SetText(artifact.cost.ToString(), value < artifact.cost ? 0 : 3);
     }
+
+    public int GetPrice()
+    {
+        return artifact.cost;
+    }
+
+
 }
