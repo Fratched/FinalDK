@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Room
 {
+    public bool IsCleared
+    {
+        get { return roomEntities.Count == 0; }
+    }
     public Room(int depth, Room parentRoom, bool bossRoom = false)
     {
         roomEntities = new List<EC_Entity>();
@@ -111,5 +115,10 @@ public class Room
                 _hostiles.Add(roomEntities[i].GetComponent<EC_Damage>());
         }
         return _hostiles;
+    }
+
+    internal Vector3 GetSpawnPoint()
+    {
+        throw new NotImplementedException();
     }
 }

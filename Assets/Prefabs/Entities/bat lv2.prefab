@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3603563806113549388}
   - component: {fileID: 1677787411193452743}
   - component: {fileID: 4606210757823977908}
+  - component: {fileID: -6032359207681362697}
   m_Layer: 0
   m_Name: bat lv2
   m_TagString: Untagged
@@ -163,6 +164,19 @@ MonoBehaviour:
   amount: 3
   rand: 1
   coinPrefab: {fileID: 3946428023895682049, guid: 6d869c8f8e1e23d4b93f5c087a2fe142, type: 3}
+--- !u!114 &-6032359207681362697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5931461512106533215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 767e3cd3e85fd114f9c25b04c1afa48a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextEnemyPrefab: {fileID: 5931461512106533215}
 --- !u!1 &7229823095076977633
 GameObject:
   m_ObjectHideFlags: 0
