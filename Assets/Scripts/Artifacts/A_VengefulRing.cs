@@ -13,7 +13,7 @@ public class A_VengefulRing : A_Base
 
     public override void Trigger()
     {
-        Player.instance.Damage.IncreaseDamage(damageIncrease);
+        Player.instance.Damage.AddDamageModifier(damageIncrease);
         Player.instance.Health.IncreaseHealth(-healthDecrease);
     }
 }

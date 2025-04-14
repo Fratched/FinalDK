@@ -17,6 +17,6 @@ public class A_HotPepper : A_Base
 
     public override void Trigger()
     {
-        Player.instance.Damage.IncreaseDamage(damageIncrease);
+        Player.instance.Damage.AddDamageModifier(damageIncrease);
     }
 }

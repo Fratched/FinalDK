@@ -19,7 +19,7 @@ public class A_DyingHeart : A_Base
         triggered = true;
 
         Player.instance.Health.IncreaseHealth(hpGain);
-        Player.instance.Damage.IncreaseDamage(damageGain);
+        Player.instance.Damage.AddDamageModifier(damageGain);
     }
 
     public override void Trigger()

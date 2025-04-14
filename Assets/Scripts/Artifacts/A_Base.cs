@@ -20,7 +20,9 @@ public abstract class A_Base : ScriptableObject
     public virtual void OnEnterBossRoom() { }
     public virtual void OnClearRoom() { }
     public virtual void OnTakeDamage() { }
+
     public virtual void OnDealDamage() { }
+
     public virtual void OnKillEnemy() { }
     public virtual void OnPickup() { }
     public virtual void OnChestOpen() { }

@@ -5,20 +5,26 @@ using UnityEngine;
 
 public class Player : Singleton<Player>
 {
-    // Components
-    public PlayerHealth Health { get { return _health; } }
-    PlayerHealth _health;
-    public PlayerDamage Damage { get { return _damage; } }
-    PlayerDamage _damage;
-    public PlayerWallet Wallet { get { return _wallet; } }
-    PlayerWallet _wallet;
+    public PlayerHealth Health { get; private set; }
+    public PlayerDamage Damage { get; private set; }
+    public PlayerWallet Wallet { get; private set; }
+
+    // Assign the artifact in the Inspector
+    public A_Base testArtifact;
 
     protected override void Awake()
     {
         base.Awake();
 
-        _health = GetComponent<PlayerHealth>();
-        _damage = GetComponent<PlayerDamage>();
-        _wallet = GetComponent<PlayerWallet>();
+        Health = GetComponent<PlayerHealth>();
+        Damage = GetComponent<PlayerDamage>();
+        Wallet = GetComponent<PlayerWallet>();
+
+        instance = this;
+    }
+
+    void Update()
+    {
+
     }
 }
