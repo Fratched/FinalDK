@@ -3,55 +3,50 @@ using System.Collections.Generic;
 
 public class LinkedEnemy : MonoBehaviour
 {
-    // Enemy prefab to spawn next in the sequence
     public GameObject nextEnemyPrefab;
-
-    // The linked list of enemies in the sequence
-    private LinkedList<LinkedEnemy> enemyChain;
-
-    // Entity reference to access enemy components
     private EC_Entity entity;
+
+    // Static shared linked list across all LinkedEnemies
+    public static LinkedList<LinkedEnemy> enemyChain = new LinkedList<LinkedEnemy>();
+
+    // Keep reference to this enemy's node in the chain
+    private LinkedListNode<LinkedEnemy> myNode;
 
     void Start()
     {
-        // Initialize the linked list
-        enemyChain = new LinkedList<LinkedEnemy>();
-
-        // Add the current enemy to the linked list as the first enemy
-        LinkedListNode<LinkedEnemy> currentEnemyNode = enemyChain.AddLast(this);
-
-        // Set up the enemy entity
         entity = GetComponent<EC_Entity>();
-        entity.removeEvent.AddListener(SpawnNext);  // Listen for the removal event to spawn the next enemy
+
+        // Add this enemy to the shared chain
+        myNode = enemyChain.AddLast(this);
+
+        // Listen for when this enemy is removed/destroyed
+        entity.removeEvent.AddListener(SpawnNext);
     }
 
     void SpawnNext()
     {
-        // Check if there's a next enemy prefab and we are not at the end of the chain
         if (nextEnemyPrefab != null && entity.room != null)
         {
-            // Instantiate the next enemy
-            GameObject next = Instantiate(nextEnemyPrefab, transform.position + Vector3.right * 2, Quaternion.identity);
+            Vector3 spawnPosition = transform.position + Vector3.right * 2;
+            GameObject next = Instantiate(nextEnemyPrefab, spawnPosition, Quaternion.identity);
 
-            // Create the new enemy and add it to the linked list
-            LinkedEnemy nextLinkedEnemy = next.GetComponent<LinkedEnemy>();
-            enemyChain.AddLast(nextLinkedEnemy);
-
-            // Add the new enemy to the room's entities
             EC_Entity newEntity = next.GetComponent<EC_Entity>();
             newEntity.room = entity.room;
+            newEntity.IsEnabled(true);
             entity.room.roomEntities.Add(newEntity);
 
-            // Enable the new enemy
-            newEntity.IsEnabled(true);
+            LinkedEnemy nextLinked = next.GetComponent<LinkedEnemy>();
 
-            // Optionally: Remove LinkedEnemy script from the new enemy to stop further spawns
-            Destroy(newEntity.GetComponent<LinkedEnemy>());
+            // Add the new enemy to the chain *after this one*
+            LinkedListNode<LinkedEnemy> newNode = enemyChain.AddAfter(myNode, nextLinked);
+            nextLinked.myNode = newNode;
+
+            // Prevent infinite spawns
+            Destroy(nextLinked); // If you want only one spawn per death
         }
     }
 
-    // Function to clear the linked list (when the chain ends or for cleanup)
-    public void ClearChain()
+    public static void ClearChain()
     {
         enemyChain.Clear();
     }

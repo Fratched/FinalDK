@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public class EC_Entity : Clickable
+
 {
+
+
     [HideInInspector] public Room room;
 
     public UnityEvent removeEvent;
