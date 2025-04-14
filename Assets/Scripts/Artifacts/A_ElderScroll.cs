@@ -21,8 +21,8 @@ public class A_ElderScroll : A_Base
     public override void Trigger()
     {
         if (enter)
-            Player.instance.Damage.IncreaseDamage(bossDamageIncrease);
+            Player.instance.Damage.AddDamageModifier(bossDamageIncrease);
         else
-            Player.instance.Damage.IncreaseDamage(-bossDamageIncrease);
+            Player.instance.Damage.AddDamageModifier(-bossDamageIncrease);
     }
 }

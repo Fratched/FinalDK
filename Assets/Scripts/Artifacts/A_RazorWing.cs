@@ -19,6 +19,6 @@ public class A_RazorWing : A_Base
 
     public override void Trigger()
     {
-        Player.instance.Damage.IncreaseDamage(damageIncrease);
+        Player.instance.Damage.AddDamageModifier(damageIncrease);
     }
 }
