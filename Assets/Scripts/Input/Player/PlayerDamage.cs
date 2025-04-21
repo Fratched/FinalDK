@@ -18,9 +18,20 @@ public class PlayerDamage : MonoBehaviour
     // Add a new damage modifier to the linked list
     public void AddDamageModifier(int amount)
     {
-        damageModifiers.AddLast(amount);  // Add the modifier at the end
+        int currentDamage = GetTotalDamage();
+
+        if (currentDamage >= int.MaxValue)
+        {
+            // Already at max value, can't add more
+            return;
+        }
+
+        // Clamp the amount so we don’t go over int.MaxValue
+        int clampedAmount = Mathf.Min(amount, int.MaxValue - currentDamage);
+        damageModifiers.AddLast(clampedAmount);
         UpdateCounter();
     }
+
 
     // Remove a specific modifier from the linked list
     public void RemoveModifier(LinkedListNode<int> node)
@@ -32,21 +43,20 @@ public class PlayerDamage : MonoBehaviour
     // Infinite damage algorithm: Add a huge modifier or apply scaling damage as needed
     public void ApplyInfiniteDamage()
     {
-        int infiniteDamage = int.MaxValue - GetTotalDamage(); // Calculate how much damage can be added without overflow.
+        int currentDamage = GetTotalDamage();
 
-        if (infiniteDamage > 0)
+        if (currentDamage >= int.MaxValue)
         {
-            // Add the remaining damage that won't cause an overflow
-            damageModifiers.AddLast(infiniteDamage);
+            // Already at max, nothing to do
+            return;
         }
-        else
-        {
-            // If adding would cause overflow, do nothing or just add the max possible damage to hit int.MaxValue
-            damageModifiers.AddLast(0); // This line effectively prevents further additions if we're at max damage.
-        }
+
+        int infiniteDamage = int.MaxValue - currentDamage; // Calculate how much damage can be added without overflow.
+        damageModifiers.AddLast(infiniteDamage);  // Add the remaining damage that won’t cause an overflow
 
         UpdateCounter();
     }
+
 
     // Add the Sharpened Sword artifact and apply its effect
     public void AddSharpenedSwordArtifact()
