@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class TurnStateEnemy : TurnBaseState
 {
     public TurnStateEnemy(TurnManager context) : base(context) { }
@@ -24,16 +25,38 @@ public class TurnStateEnemy : TurnBaseState
 
     public override void UpdateState()
     {
-        if (_hostiles.Count > 0 && _timeSinceAttack >= _ctx.timeBetweenAttacks)
+        // Check if cheat to disable enemies' turn is active
+        if (GameCheats.EnemiesDisabled)
         {
-            // Attack
-            if (_hostiles[0] != null)
-                _hostiles[0].Attack();
-            _hostiles.RemoveAt(0);
-            _timeSinceAttack = 0;
+            // Skip the enemy turn, go back to player turn
+            SwitchState("Player");
+            return;
         }
 
-        // Exit combat?
+        if (_hostiles.Count > 0 && _timeSinceAttack >= _ctx.timeBetweenAttacks)
+        {
+            var enemy = _hostiles[0];
+
+            // Create the behavior tree
+            BehaviorNode tree = new SequenceNode(new List<BehaviorNode>
+            {
+                new IsEnemyDisabledNode(), // Check if enemy should act
+                new AttackNode()           // Perform the attack
+            });
+
+            // Execute the tree on the first hostile (enemy)
+            bool result = tree.Execute(enemy);
+            if (!result)
+            {
+                Debug.Log("Enemy failed to act.");
+            }
+
+            // Remove the enemy from the list after attacking
+            _hostiles.RemoveAt(0);
+            _timeSinceAttack = 0; // Reset the timer
+        }
+
+        // Exit combat if room is cleared
         if (DungeonManager.instance.CurrentRoom.Clear)
         {
             ArtifactManager.instance.TriggerClearRoom();
@@ -41,14 +64,14 @@ public class TurnStateEnemy : TurnBaseState
             return;
         }
 
-        // Player turn?
+        // Switch to Player turn if no hostiles are left
         if (_hostiles.Count <= 0)
         {
             SwitchState("Player");
             return;
         }
 
-        // Timers
+        // Increment attack timer
         _timeSinceAttack += Time.deltaTime;
     }
 }

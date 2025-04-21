@@ -24,6 +24,8 @@ public class TurnManager : Singleton<TurnManager>
         InitializeStates();
     }
 
+
+
     public void StartTurnManager()
     {
         _currentState = states["Idle"];
@@ -40,6 +42,14 @@ public class TurnManager : Singleton<TurnManager>
     {
         if (_currentState != null)
             _currentState.UpdateState();
+
+        // Toggle cheat to disable enemies' turn when the '3' key is pressed
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            GameCheats.EnemiesDisabled = !GameCheats.EnemiesDisabled;
+
+            Debug.Log($"Enemy turns are now {(GameCheats.EnemiesDisabled ? "disabled" : "enabled")}.");
+        }
     }
 
     void InitializeStates()
