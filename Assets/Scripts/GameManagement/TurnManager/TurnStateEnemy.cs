@@ -39,24 +39,25 @@ public class TurnStateEnemy : TurnBaseState
         {
             var enemy = _hostiles[0];
 
-            // Create the behavior tree
-            // Randomly decide which attack node to try first
-            List<BehaviorNode> attackOptions = new List<BehaviorNode> { new AttackNode(), new AttackTwiceNode() };
-            int randIndex = UnityEngine.Random.Range(0, attackOptions.Count);
+            // Randomly decide which action the enemy will take
+            List<BehaviorNode> actionOptions = new List<BehaviorNode>
+        {
+            new AttackNode(),          // Attack once
+            new AttackTwiceNode(),     // Attack twice
+            new DefendNode()           // Defend to reduce incoming damage
+        };
 
-            // Shuffle attack order randomly
-            BehaviorNode first = attackOptions[randIndex];
-            BehaviorNode second = attackOptions[1 - randIndex];
+            int randIndex = UnityEngine.Random.Range(0, actionOptions.Count);
 
-            // Create a selector that tries a random attack behavior
+            // Shuffle the action options randomly
+            BehaviorNode chosenAction = actionOptions[randIndex];
+
+            // Create the behavior tree for the selected action
             BehaviorNode tree = new SequenceNode(new List<BehaviorNode>
-            {
-             new IsEnemyDisabledNode(),
-             new SelectorNode(new List<BehaviorNode> { first, second }) // Tries one of the attack types
-            });
-
-
-
+        {
+            new IsEnemyDisabledNode(),   // Check if enemy should act
+            chosenAction                // Execute the randomly chosen action
+        });
 
             // Execute the tree on the first hostile (enemy)
             bool result = tree.Execute(enemy);
@@ -65,7 +66,7 @@ public class TurnStateEnemy : TurnBaseState
                 Debug.Log("Enemy failed to act.");
             }
 
-            // Remove the enemy from the list after attacking
+            // Remove the enemy from the list after performing the action
             _hostiles.RemoveAt(0);
             _timeSinceAttack = 0; // Reset the timer
         }
