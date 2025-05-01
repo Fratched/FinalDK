@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PlasticPipe.Server.MonitorStats;
 
 
 public class TurnStateEnemy : TurnBaseState
@@ -38,11 +40,23 @@ public class TurnStateEnemy : TurnBaseState
             var enemy = _hostiles[0];
 
             // Create the behavior tree
+            // Randomly decide which attack node to try first
+            List<BehaviorNode> attackOptions = new List<BehaviorNode> { new AttackNode(), new AttackTwiceNode() };
+            int randIndex = UnityEngine.Random.Range(0, attackOptions.Count);
+
+            // Shuffle attack order randomly
+            BehaviorNode first = attackOptions[randIndex];
+            BehaviorNode second = attackOptions[1 - randIndex];
+
+            // Create a selector that tries a random attack behavior
             BehaviorNode tree = new SequenceNode(new List<BehaviorNode>
             {
-                new IsEnemyDisabledNode(), // Check if enemy should act
-                new AttackNode()           // Perform the attack
+             new IsEnemyDisabledNode(),
+             new SelectorNode(new List<BehaviorNode> { first, second }) // Tries one of the attack types
             });
+
+
+
 
             // Execute the tree on the first hostile (enemy)
             bool result = tree.Execute(enemy);
