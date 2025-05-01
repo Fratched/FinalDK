@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public class EC_Entity : Clickable
-
 {
+    public EC_Health health;
+    public EC_Damage damage;
 
 
     [HideInInspector] public Room room;
@@ -12,6 +13,14 @@ public class EC_Entity : Clickable
 
     [Header("FX")]
     public GameObject deathFX;
+
+
+    void Awake()
+    {
+        // Initialize or reference components
+        health = GetComponent<EC_Health>();
+        damage = GetComponent<EC_Damage>();
+    }
 
     public void IsEnabled(bool enabled)
     {

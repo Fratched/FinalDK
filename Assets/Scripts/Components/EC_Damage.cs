@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EC_Damage : MonoBehaviour
 {
+    private EC_Health health;
     public int damage;
     public int maxHealth = 100;  // Max health for the enemy
     public int currentHealth;    // Current health for the enemy
@@ -20,6 +21,14 @@ public class EC_Damage : MonoBehaviour
 
     // Healing properties
     private float healFactor = 0.2f;  // Default to 20% of max health for healing
+
+    private bool hasHealedThisTurn = false; // Flag to track if healing has been done this turn
+
+
+    void Awake()
+    {
+        health = GetComponent<EC_Health>();
+    }
 
     void Start()
     {
@@ -44,6 +53,9 @@ public class EC_Damage : MonoBehaviour
             Player.instance.Health.Damage(damage);
             Debug.Log("Enemy attacked with damage: " + damage);
         }
+        
+        // Set WasDamaged flag after attacking
+        WasDamaged = true;  // Ensure this flag is set so the enemy can heal later
     }
 
     // Method to apply defense, reducing damage
@@ -63,17 +75,28 @@ public class EC_Damage : MonoBehaviour
     }
 
     // Method to heal the enemy (only if they were damaged)
-    public void Heal()
+    public void Heal(int healAmount)
     {
+
+        if (hasHealedThisTurn)
+        {
+            Debug.Log("Enemy has already healed this turn.");
+            return;
+        }
         if (WasDamaged)
         {
-            int healAmount = Mathf.FloorToInt(maxHealth * healFactor);
-            currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);  // Ensure health doesn't exceed max
-
+           
+            health.Heal(healAmount);  // Applies to actual EC_Health
             WasDamaged = false;  // Reset the damage flag after healing
+            hasHealedThisTurn = true; // Set the flag to prevent healing again this turn
 
             Debug.Log("Enemy healed for: " + healAmount + ", current health: " + currentHealth);
         }
+    }
+
+    public void ResetHealingFlag()
+    {
+        hasHealedThisTurn = false;
     }
 
     void UpdateCounter()

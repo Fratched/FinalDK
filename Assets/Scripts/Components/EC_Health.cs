@@ -7,6 +7,9 @@ public class EC_Health : MonoBehaviour
     public int maxHealth;
     int currentHealth;
 
+    // Flag to track if the entity has healed this turn
+    public bool hasHealedThisTurn { get; private set; }
+
     [Header("Events")]
     public UnityEvent deathEvent;
     public UnityEvent damageEvent;
@@ -42,11 +45,20 @@ public class EC_Health : MonoBehaviour
 
     public void Heal(int value)
     {
+        if (hasHealedThisTurn)
+        {
+            Debug.Log("Enemy has already healed this turn.");
+            return;
+        }
+
         currentHealth += value;
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
+
+        hasHealedThisTurn = true;  // Set the flag to prevent healing again this turn
+
         UpdateCounter();
     }
 
