@@ -6,7 +6,7 @@ public class EC_Damage : MonoBehaviour
 {
     private EC_Health health;
     public int damage;
-    public int maxHealth = 100;  // Max health for the enemy
+    public int maxHealth;  // Max health for the enemy
     public int currentHealth;    // Current health for the enemy
 
     // Components
@@ -15,6 +15,8 @@ public class EC_Damage : MonoBehaviour
     // For tracking if the enemy is defending
     private bool isDefending = false;
     private float defenseFactor = 0.5f;  // Default to 50% damage reduction
+    public bool IsDefending => isDefending;
+    public float DefenseFactor => defenseFactor;
 
     // Flag to track if the enemy was damaged in the last turn
     public bool WasDamaged { get; set; } = false;
@@ -28,6 +30,10 @@ public class EC_Damage : MonoBehaviour
     void Awake()
     {
         health = GetComponent<EC_Health>();
+        if (health == null)
+        {
+            Debug.LogWarning("EC_Health component missing from enemy!");
+        }
     }
 
     void Start()
@@ -38,22 +44,29 @@ public class EC_Damage : MonoBehaviour
 
     public void Attack()
     {
-        if (isDefending)
+        if (Player.instance?.Health == null)
         {
-            // If defending, reduce the damage by the defense factor
-            int reducedDamage = Mathf.FloorToInt(damage * defenseFactor);
-            GetComponentInChildren<EC_Animator>()?.Squash(1.5f, 1.5f);
-            Player.instance.Health.Damage(reducedDamage);  // Apply reduced damage
-            Debug.Log("Enemy is defending, damage reduced to: " + reducedDamage);
+            Debug.LogWarning("Player instance or Health is missing. Cannot apply damage.");
+            return;
+        }
+
+        int finalDamage = isDefending ? Mathf.FloorToInt(damage * defenseFactor) : damage;
+
+        var anim = GetComponentInChildren<EC_Animator>();
+        if (anim != null)
+        {
+            anim.Squash(1.5f, 1.5f);
         }
         else
         {
-            // Normal attack logic if not defending
-            GetComponentInChildren<EC_Animator>()?.Squash(1.5f, 1.5f);
-            Player.instance.Health.Damage(damage);
-            Debug.Log("Enemy attacked with damage: " + damage);
+            Debug.LogWarning("EC_Animator not found in children of enemy.");
         }
-        
+
+        Player.instance.Health.Damage(finalDamage);
+        Debug.Log(isDefending ? $"Enemy is defending, damage reduced to: {finalDamage}" : $"Enemy attacked with damage: {finalDamage}");
+
+        WasDamaged = true;
+
         // Set WasDamaged flag after attacking
         WasDamaged = true;  // Ensure this flag is set so the enemy can heal later
     }
@@ -90,7 +103,7 @@ public class EC_Damage : MonoBehaviour
             WasDamaged = false;  // Reset the damage flag after healing
             hasHealedThisTurn = true; // Set the flag to prevent healing again this turn
 
-            Debug.Log("Enemy healed for: " + healAmount + ", current health: " + currentHealth);
+            //Debug.Log("Enemy healed for: " + healAmount + ", current health: " + currentHealth);
         }
     }
 
@@ -101,7 +114,15 @@ public class EC_Damage : MonoBehaviour
 
     void UpdateCounter()
     {
-        if (counter == null) return;
-        counter.SetText(damage.ToString(), 1);
+        if (counter == null)
+        {
+            counter.SetText(damage.ToString(), 1);
+        }
+        else
+        {
+            Debug.LogWarning("Counter reference is missing on EC_Damage.");
+        }
+
     }
+
 }

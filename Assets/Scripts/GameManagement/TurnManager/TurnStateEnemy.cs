@@ -45,15 +45,24 @@ public class TurnStateEnemy : TurnBaseState
         {
             var enemy = _hostiles[0];
 
+            //Check if the enemy has been destroyed or deactivated
+            if (enemy == null || enemy.gameObject == null || !enemy.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning("Enemy was destroyed before acting. Skipping turn.");
+                _hostiles.RemoveAt(0);
+                _timeSinceAttack = 0;
+                return;
+            }
+
             if (enemy.WasDamaged)
             {
                 // Heal node will execute healing
                 BehaviorNode healAction = new HealNode(); // Heal first
                 BehaviorNode healTree = new SequenceNode(new List<BehaviorNode>
-            {
-                new IsEnemyDisabledNode(),   // Check if enemy should act
-                healAction                // Heal first
-            });
+                {
+                   new IsEnemyDisabledNode(),   // Check if enemy should act
+                   healAction                // Heal first
+                });
 
                 bool healResult = healTree.Execute(enemy); // Execute healing behavior
                 if (healResult)
