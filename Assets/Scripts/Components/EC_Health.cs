@@ -6,6 +6,10 @@ public class EC_Health : MonoBehaviour
 {
     public int maxHealth;
     int currentHealth;
+    EC_Damage damageComponent;
+
+    // Flag to track if the entity has healed this turn
+    public bool hasHealedThisTurn { get; private set; }
 
     [Header("Events")]
     public UnityEvent deathEvent;
@@ -21,15 +25,24 @@ public class EC_Health : MonoBehaviour
 
         currentHealth = maxHealth;
         UpdateCounter();
+
+        damageComponent = GetComponent<EC_Damage>();
     }
 
     public void Damage(int value)
     {
+        if (damageComponent != null && damageComponent.IsDefending)
+        {
+            value = Mathf.FloorToInt(value * damageComponent.DefenseFactor);
+            Debug.Log("Enemy is defending! Incoming damage reduced to: " + value);
+        }
+
         PlayerStats.instance.damageDealt += value;
         damageEvent.Invoke();
         DamagePopup.CreatePopup(transform.position, value);
         SoundManager.instance.PlaySound("Enemy Hurt");
         ArtifactManager.instance.TriggerDealDamage();
+
         currentHealth -= value;
         if (currentHealth <= 0)
         {
@@ -42,11 +55,20 @@ public class EC_Health : MonoBehaviour
 
     public void Heal(int value)
     {
+        if (hasHealedThisTurn)
+        {
+            Debug.Log("Enemy has already healed this turn.");
+            return;
+        }
+
         currentHealth += value;
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
+
+        hasHealedThisTurn = true;  // Set the flag to prevent healing again this turn
+
         UpdateCounter();
     }
 
