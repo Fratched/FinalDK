@@ -5,6 +5,8 @@ using UnityEngine;
 public class EC_Damage : MonoBehaviour
 {
     public int damage;
+    public int maxHealth = 100;  // Max health for the enemy
+    public int currentHealth;    // Current health for the enemy
 
     // Components
     [SerializeField] Counter counter;
@@ -13,8 +15,15 @@ public class EC_Damage : MonoBehaviour
     private bool isDefending = false;
     private float defenseFactor = 0.5f;  // Default to 50% damage reduction
 
+    // Flag to track if the enemy was damaged in the last turn
+    public bool WasDamaged { get; set; } = false;
+
+    // Healing properties
+    private float healFactor = 0.2f;  // Default to 20% of max health for healing
+
     void Start()
     {
+        currentHealth = maxHealth;  // Initialize health
         UpdateCounter();
     }
 
@@ -41,7 +50,7 @@ public class EC_Damage : MonoBehaviour
     public void Defend(float defenseMultiplier)
     {
         isDefending = true;
-        defenseFactor = defenseMultiplier;  // Set the defense multiplier (e.g., 0.5f for 50%)
+        defenseFactor = defenseMultiplier;  // Set the defense multiplier 
         Debug.Log("Enemy is now defending, damage reduced by: " + defenseMultiplier * 100 + "%");
     }
 
@@ -51,6 +60,20 @@ public class EC_Damage : MonoBehaviour
         isDefending = false;
         defenseFactor = 1f;  // Reset the defense factor to normal (no defense)
         Debug.Log("Enemy is no longer defending.");
+    }
+
+    // Method to heal the enemy (only if they were damaged)
+    public void Heal()
+    {
+        if (WasDamaged)
+        {
+            int healAmount = Mathf.FloorToInt(maxHealth * healFactor);
+            currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);  // Ensure health doesn't exceed max
+
+            WasDamaged = false;  // Reset the damage flag after healing
+
+            Debug.Log("Enemy healed for: " + healAmount + ", current health: " + currentHealth);
+        }
     }
 
     void UpdateCounter()

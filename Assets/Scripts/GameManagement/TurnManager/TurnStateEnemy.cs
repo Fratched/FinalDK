@@ -44,12 +44,12 @@ public class TurnStateEnemy : TurnBaseState
         {
             new AttackNode(),          // Attack once
             new AttackTwiceNode(),     // Attack twice
-            new DefendNode()           // Defend to reduce incoming damage
+            new DefendNode(),          // Defend to reduce incoming damage
+            new HealNode()             // Heal if damaged
         };
 
+            // Select a random action from the list
             int randIndex = UnityEngine.Random.Range(0, actionOptions.Count);
-
-            // Shuffle the action options randomly
             BehaviorNode chosenAction = actionOptions[randIndex];
 
             // Create the behavior tree for the selected action
