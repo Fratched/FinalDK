@@ -100,7 +100,7 @@ public class PlayerDamage : MonoBehaviour
         // Check for key press to add the Sharpened Sword artifact (2 key)
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            AddSharpenedSwordArtifact();  // Add the Sharpened Sword damage increase
+            ArtifactManager.instance.AddArtifact(sharpenedSwordArtifact);  // Correctly adds and manages the artifact
         }
     }
 
